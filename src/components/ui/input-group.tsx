@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
+    // biome-ignore lint/a11y/useSemanticElements: role="group" is the correct pattern for input groups, fieldset is for form fields
     <div
       data-slot="input-group"
       role="group"
@@ -62,6 +63,8 @@ function InputGroupAddon({
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof inputGroupAddonVariants>) {
   return (
+    // biome-ignore lint/a11y/useSemanticElements: role="group" is the correct pattern for input addon groups
+    // biome-ignore lint/a11y/useKeyWithClickEvents: onClick is a mouse convenience to focus input, keyboard users can tab directly to the input
     <div
       role="group"
       data-slot="input-group-addon"

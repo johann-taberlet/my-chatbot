@@ -8,7 +8,7 @@ export async function POST(req: Request): Promise<Response> {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   const result = streamText({
-    model: claudeCode("sonnet"),
+    model: claudeCode("opus"),
     messages: convertToModelMessages(messages),
   });
 

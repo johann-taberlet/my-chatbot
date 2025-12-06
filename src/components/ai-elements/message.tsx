@@ -346,6 +346,7 @@ export function MessageAttachment({
     >
       {isImage ? (
         <>
+          {/* biome-ignore lint/performance/noImgElement: User-uploaded images use blob URLs which are incompatible with Next.js Image optimization */}
           <img
             alt={filename || "attachment"}
             className="size-full object-cover"

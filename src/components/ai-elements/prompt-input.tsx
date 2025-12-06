@@ -27,10 +27,8 @@ import {
   type PropsWithChildren,
   type ReactNode,
   type RefObject,
-  useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -147,7 +145,7 @@ export function PromptInputProvider({
 }: PromptInputProviderProps) {
   // ----- textInput state
   const [textInput, setTextInput] = useState(initialTextInput);
-  const clearInput = useCallback(() => setTextInput(""), []);
+  const clearInput = () => setTextInput("");
 
   // ----- attachments state (global when wrapped)
   const [attachmentFiles, setAttachmentFiles] = useState<
@@ -156,7 +154,7 @@ export function PromptInputProvider({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const openRef = useRef<() => void>(() => {});
 
-  const add = useCallback((files: File[] | FileList) => {
+  const add = (files: File[] | FileList) => {
     const incoming = Array.from(files);
     if (incoming.length === 0) {
       return;
@@ -173,9 +171,9 @@ export function PromptInputProvider({
         })),
       ),
     );
-  }, []);
+  };
 
-  const remove = useCallback((id: string) => {
+  const remove = (id: string) => {
     setAttachmentFiles((prev) => {
       const found = prev.find((f) => f.id === id);
       if (found?.url) {
@@ -183,9 +181,9 @@ export function PromptInputProvider({
       }
       return prev.filter((f) => f.id !== id);
     });
-  }, []);
+  };
 
-  const clear = useCallback(() => {
+  const clear = () => {
     setAttachmentFiles((prev) => {
       for (const f of prev) {
         if (f.url) {
@@ -194,7 +192,7 @@ export function PromptInputProvider({
       }
       return [];
     });
-  }, []);
+  };
 
   // Keep a ref to attachments for cleanup on unmount (avoids stale closure)
   const attachmentsRef = useRef(attachmentFiles);
@@ -211,42 +209,36 @@ export function PromptInputProvider({
     };
   }, []);
 
-  const openFileDialog = useCallback(() => {
+  const openFileDialog = () => {
     openRef.current?.();
-  }, []);
+  };
 
-  const attachments = useMemo<AttachmentsContext>(
-    () => ({
-      files: attachmentFiles,
-      add,
-      remove,
-      clear,
-      openFileDialog,
-      fileInputRef,
-    }),
-    [attachmentFiles, add, remove, clear, openFileDialog],
-  );
+  const attachments: AttachmentsContext = {
+    files: attachmentFiles,
+    add,
+    remove,
+    clear,
+    openFileDialog,
+    fileInputRef,
+  };
 
-  const __registerFileInput = useCallback(
-    (ref: RefObject<HTMLInputElement | null>, open: () => void) => {
-      fileInputRef.current = ref.current;
-      openRef.current = open;
+  const __registerFileInput = (
+    ref: RefObject<HTMLInputElement | null>,
+    open: () => void,
+  ) => {
+    fileInputRef.current = ref.current;
+    openRef.current = open;
+  };
+
+  const controller: PromptInputControllerProps = {
+    textInput: {
+      value: textInput,
+      setInput: setTextInput,
+      clear: clearInput,
     },
-    [],
-  );
-
-  const controller = useMemo<PromptInputControllerProps>(
-    () => ({
-      textInput: {
-        value: textInput,
-        setInput: setTextInput,
-        clear: clearInput,
-      },
-      attachments,
-      __registerFileInput,
-    }),
-    [textInput, clearInput, attachments, __registerFileInput],
-  );
+    attachments,
+    __registerFileInput,
+  };
 
   return (
     <PromptInputController.Provider value={controller}>
@@ -310,6 +302,7 @@ export function PromptInputAttachment({
           <div className="relative size-5 shrink-0">
             <div className="absolute inset-0 flex size-5 items-center justify-center overflow-hidden rounded bg-background transition-opacity group-hover:opacity-0">
               {isImage ? (
+                // biome-ignore lint/performance/noImgElement: User-uploaded images use blob URLs which are incompatible with Next.js Image optimization
                 <img
                   alt={filename || "attachment"}
                   className="size-5 object-cover"
@@ -345,6 +338,7 @@ export function PromptInputAttachment({
         <div className="w-auto space-y-3">
           {isImage && (
             <div className="flex max-h-96 w-96 items-center justify-center overflow-hidden rounded-md border">
+              {/* biome-ignore lint/performance/noImgElement: User-uploaded images use blob URLs which are incompatible with Next.js Image optimization */}
               <img
                 alt={filename || "attachment preview"}
                 className="max-h-full max-w-full object-contain"
@@ -484,99 +478,87 @@ export const PromptInput = ({
   const filesRef = useRef(files);
   filesRef.current = files;
 
-  const openFileDialogLocal = useCallback(() => {
+  const openFileDialogLocal = () => {
     inputRef.current?.click();
-  }, []);
+  };
 
-  const matchesAccept = useCallback(
-    (f: File) => {
-      if (!accept || accept.trim() === "") {
-        return true;
-      }
-      if (accept.includes("image/*")) {
-        return f.type.startsWith("image/");
-      }
-      // NOTE: keep simple; expand as needed
+  const matchesAccept = (f: File) => {
+    if (!accept || accept.trim() === "") {
       return true;
-    },
-    [accept],
-  );
+    }
+    if (accept.includes("image/*")) {
+      return f.type.startsWith("image/");
+    }
+    // NOTE: keep simple; expand as needed
+    return true;
+  };
 
-  const addLocal = useCallback(
-    (fileList: File[] | FileList) => {
-      const incoming = Array.from(fileList);
-      const accepted = incoming.filter((f) => matchesAccept(f));
-      if (incoming.length && accepted.length === 0) {
-        onError?.({
-          code: "accept",
-          message: "No files match the accepted types.",
-        });
-        return;
-      }
-      const withinSize = (f: File) =>
-        maxFileSize ? f.size <= maxFileSize : true;
-      const sized = accepted.filter(withinSize);
-      if (accepted.length > 0 && sized.length === 0) {
-        onError?.({
-          code: "max_file_size",
-          message: "All files exceed the maximum size.",
-        });
-        return;
-      }
-
-      setItems((prev) => {
-        const capacity =
-          typeof maxFiles === "number"
-            ? Math.max(0, maxFiles - prev.length)
-            : undefined;
-        const capped =
-          typeof capacity === "number" ? sized.slice(0, capacity) : sized;
-        if (typeof capacity === "number" && sized.length > capacity) {
-          onError?.({
-            code: "max_files",
-            message: "Too many files. Some were not added.",
-          });
-        }
-        const next: (FileUIPart & { id: string })[] = [];
-        for (const file of capped) {
-          next.push({
-            id: nanoid(),
-            type: "file",
-            url: URL.createObjectURL(file),
-            mediaType: file.type,
-            filename: file.name,
-          });
-        }
-        return prev.concat(next);
+  const addLocal = (fileList: File[] | FileList) => {
+    const incoming = Array.from(fileList);
+    const accepted = incoming.filter((f) => matchesAccept(f));
+    if (incoming.length && accepted.length === 0) {
+      onError?.({
+        code: "accept",
+        message: "No files match the accepted types.",
       });
-    },
-    [matchesAccept, maxFiles, maxFileSize, onError],
-  );
+      return;
+    }
+    const withinSize = (f: File) =>
+      maxFileSize ? f.size <= maxFileSize : true;
+    const sized = accepted.filter(withinSize);
+    if (accepted.length > 0 && sized.length === 0) {
+      onError?.({
+        code: "max_file_size",
+        message: "All files exceed the maximum size.",
+      });
+      return;
+    }
 
-  const removeLocal = useCallback(
-    (id: string) =>
-      setItems((prev) => {
-        const found = prev.find((file) => file.id === id);
-        if (found?.url) {
-          URL.revokeObjectURL(found.url);
-        }
-        return prev.filter((file) => file.id !== id);
-      }),
-    [],
-  );
+    setItems((prev) => {
+      const capacity =
+        typeof maxFiles === "number"
+          ? Math.max(0, maxFiles - prev.length)
+          : undefined;
+      const capped =
+        typeof capacity === "number" ? sized.slice(0, capacity) : sized;
+      if (typeof capacity === "number" && sized.length > capacity) {
+        onError?.({
+          code: "max_files",
+          message: "Too many files. Some were not added.",
+        });
+      }
+      const next: (FileUIPart & { id: string })[] = [];
+      for (const file of capped) {
+        next.push({
+          id: nanoid(),
+          type: "file",
+          url: URL.createObjectURL(file),
+          mediaType: file.type,
+          filename: file.name,
+        });
+      }
+      return prev.concat(next);
+    });
+  };
 
-  const clearLocal = useCallback(
-    () =>
-      setItems((prev) => {
-        for (const file of prev) {
-          if (file.url) {
-            URL.revokeObjectURL(file.url);
-          }
+  const removeLocal = (id: string) =>
+    setItems((prev) => {
+      const found = prev.find((file) => file.id === id);
+      if (found?.url) {
+        URL.revokeObjectURL(found.url);
+      }
+      return prev.filter((file) => file.id !== id);
+    });
+
+  const clearLocal = () =>
+    setItems((prev) => {
+      for (const file of prev) {
+        if (file.url) {
+          URL.revokeObjectURL(file.url);
         }
-        return [];
-      }),
-    [],
-  );
+      }
+      return [];
+    });
 
   const add = usingProvider ? controller.attachments.add : addLocal;
   const remove = usingProvider ? controller.attachments.remove : removeLocal;
@@ -686,17 +668,14 @@ export const PromptInput = ({
     }
   };
 
-  const ctx = useMemo<AttachmentsContext>(
-    () => ({
-      files: files.map((item) => ({ ...item, id: item.id })),
-      add,
-      remove,
-      clear,
-      openFileDialog,
-      fileInputRef: inputRef,
-    }),
-    [files, add, remove, clear, openFileDialog],
-  );
+  const ctx: AttachmentsContext = {
+    files: files.map((item) => ({ ...item, id: item.id })),
+    add,
+    remove,
+    clear,
+    openFileDialog,
+    fileInputRef: inputRef,
+  };
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
@@ -718,7 +697,7 @@ export const PromptInput = ({
     // Convert blob URLs to data URLs asynchronously
     Promise.all(
       files.map(async ({ id, ...item }) => {
-        if (item.url && item.url.startsWith("blob:")) {
+        if (item.url?.startsWith("blob:")) {
           const dataUrl = await convertBlobUrlToDataUrl(item.url);
           // If conversion failed, keep the original blob URL
           return {
@@ -1051,13 +1030,13 @@ interface SpeechRecognition extends EventTarget {
   lang: string;
   start(): void;
   stop(): void;
-  onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onstart: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => void) | null;
   onresult:
-    | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any)
+    | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void)
     | null;
   onerror:
-    | ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any)
+    | ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void)
     | null;
 }
 
@@ -1177,7 +1156,7 @@ export const PromptInputSpeechButton = ({
     };
   }, [textareaRef, onTranscriptionChange]);
 
-  const toggleListening = useCallback(() => {
+  const toggleListening = () => {
     if (!recognition) {
       return;
     }
@@ -1187,7 +1166,7 @@ export const PromptInputSpeechButton = ({
     } else {
       recognition.start();
     }
-  }, [recognition, isListening]);
+  };
 
   return (
     <PromptInputButton
