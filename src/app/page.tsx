@@ -45,7 +45,13 @@ export default function ChatPage() {
           ) : (
             messages.map((message) => (
               <Message from={message.role} key={message.id}>
-                <MessageContent>
+                <MessageContent
+                  className={
+                    message.role === "assistant"
+                      ? "prose prose-neutral dark:prose-invert max-w-none"
+                      : undefined
+                  }
+                >
                   {message.parts.map((part, i) => {
                     if (part.type === "text") {
                       return (
