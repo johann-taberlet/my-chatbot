@@ -9,17 +9,14 @@ import {
   ConversationEmptyState,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from "@/components/ai-elements/message";
+import { Message, MessageContent } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputFooter,
   PromptInputSubmit,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
+import { StreamingMessage } from "@/components/streaming-message";
 
 export default function ChatPage() {
   const [input, setInput] = useState("");
@@ -55,9 +52,11 @@ export default function ChatPage() {
                   {message.parts.map((part, i) => {
                     if (part.type === "text") {
                       return (
-                        <MessageResponse key={`${message.id}-${i}`}>
-                          {part.text}
-                        </MessageResponse>
+                        <StreamingMessage
+                          key={`${message.id}-${i}`}
+                          text={part.text}
+                          animate={message.role === "assistant"}
+                        />
                       );
                     }
                     return null;
