@@ -1,0 +1,20 @@
+{
+  "attachments": [],
+  "created_at": "2026-05-30T17:05:22.689Z",
+  "id": "plot-kh735682avx4p2hb9e9hzmqsd987q17x",
+  "intent": {
+    "constraints": [],
+    "goal": "Corriger le chat pour qu’un message envoyé ne reste pas bloqué en chargement et aboutisse à une réponse ou à une erreur claire.",
+    "non_goals": [],
+    "success_criteria": [
+      "Quand l’utilisateur envoie un message, son message apparaît dans la conversation.",
+      "Le chargement se termine au lieu de rester infini.",
+      "Le chatbot affiche une réponse lorsque le service fonctionne.",
+      "Si la réponse échoue, l’interface affiche une erreur compréhensible et permet de réessayer."
+    ]
+  },
+  "name": "Corriger le chat pour qu’un message envoyé ne reste pas bloqué en chargement et aboutisse à une réponse ou à une erreur claire.",
+  "schema_version": 1,
+  "status": "drafting",
+  "updated_at": "2026-05-30T17:05:22.689Z"
+}
