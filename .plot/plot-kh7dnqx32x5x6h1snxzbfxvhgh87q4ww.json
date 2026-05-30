@@ -1,0 +1,32 @@
+{
+  "attachments": [],
+  "created_at": "2026-05-30T08:51:37.437Z",
+  "id": "plot-kh7dnqx32x5x6h1snxzbfxvhgh87q4ww",
+  "intent": {
+    "constraints": [
+      "S’appuyer sur le chatbot texte existant avec streaming et interface simple.",
+      "L’expérience doit rester simple et compréhensible pour l’utilisateur.",
+      "L’historique doit être disponible après connexion sur plusieurs appareils.",
+      "L’authentification doit se faire par email + mot de passe.",
+      "L’historique doit être affiché dans une barre latérale à gauche."
+    ],
+    "goal": "Ajouter une connexion email + mot de passe et un historique des conversations lié au compte utilisateur, accessible depuis plusieurs appareils, affiché dans une barre latérale, avec ouverture, renommage et suppression des conversations.",
+    "non_goals": [
+      "Connexion via Google ou autre fournisseur externe."
+    ],
+    "success_criteria": [
+      "Un utilisateur peut créer un compte ou se connecter avec email + mot de passe.",
+      "Un utilisateur connecté peut retrouver ses conversations après rechargement.",
+      "Un utilisateur connecté peut retrouver ses conversations depuis un autre appareil.",
+      "Un utilisateur peut voir ses conversations dans une barre latérale.",
+      "Un utilisateur peut ouvrir une conversation passée.",
+      "Un utilisateur peut renommer une conversation.",
+      "Un utilisateur peut supprimer une conversation.",
+      "Les conversations d’un utilisateur ne sont pas visibles par les autres utilisateurs."
+    ]
+  },
+  "name": "Ajouter une connexion email + mot de passe et un historique des conversations lié au compte utilisateur, accessible depuis plusieurs appareils, affiché dans une barre latérale, avec ouverture, renommage et suppression des conversations.",
+  "schema_version": 1,
+  "status": "drafting",
+  "updated_at": "2026-05-30T08:51:37.437Z"
+}
