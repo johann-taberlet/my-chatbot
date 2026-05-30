@@ -1,0 +1,21 @@
+{
+  "attachments": [],
+  "created_at": "2026-05-30T12:08:54.425Z",
+  "id": "plot-kh7ajn8bsab0qpqvf0r2ysr2n987qt5k",
+  "intent": {
+    "constraints": [
+      "L’application utilise déjà un streaming côté serveur et une animation côté interface.",
+      "Les messages utilisateur ne sont pas animés ; seuls les messages de l’assistant le sont."
+    ],
+    "goal": "Comprendre ou ajuster l’effet de streaming du texte pendant les réponses de l’assistant dans le chat.",
+    "non_goals": [],
+    "success_criteria": [
+      "Le comportement actuel est clairement expliqué au client.",
+      "Le besoin est clarifié : simple explication ou modification de l’effet."
+    ]
+  },
+  "name": "Comprendre ou ajuster l’effet de streaming du texte pendant les réponses de l’assistant dans le chat.",
+  "schema_version": 1,
+  "status": "drafting",
+  "updated_at": "2026-05-30T12:08:54.425Z"
+}
