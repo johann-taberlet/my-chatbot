@@ -1,5 +1,70 @@
 {
-  "attachments": [],
+  "attachments": [
+    {
+      "id": "att-001",
+      "type": "seeds_issue",
+      "ref": "3oWJPt-97cf",
+      "role": "tracks",
+      "added_at": "2026-05-30T08:51:40.302Z",
+      "added_by": "agent:planner"
+    },
+    {
+      "id": "att-002",
+      "type": "seeds_issue",
+      "ref": "3oWJPt-653d",
+      "role": "tracks",
+      "added_at": "2026-05-30T08:51:40.302Z",
+      "added_by": "agent:planner"
+    },
+    {
+      "id": "att-003",
+      "type": "seeds_issue",
+      "ref": "3oWJPt-f996",
+      "role": "tracks",
+      "added_at": "2026-05-30T08:51:40.302Z",
+      "added_by": "agent:planner"
+    },
+    {
+      "id": "att-004",
+      "type": "seeds_issue",
+      "ref": "3oWJPt-b8c2",
+      "role": "tracks",
+      "added_at": "2026-05-30T08:51:40.302Z",
+      "added_by": "agent:planner"
+    },
+    {
+      "id": "att-005",
+      "type": "seeds_issue",
+      "ref": "3oWJPt-c141",
+      "role": "tracks",
+      "added_at": "2026-05-30T08:51:40.302Z",
+      "added_by": "agent:planner"
+    },
+    {
+      "id": "att-006",
+      "type": "seeds_issue",
+      "ref": "3oWJPt-7949",
+      "role": "tracks",
+      "added_at": "2026-05-30T08:51:40.302Z",
+      "added_by": "agent:planner"
+    },
+    {
+      "id": "att-007",
+      "type": "seeds_issue",
+      "ref": "3oWJPt-77ee",
+      "role": "tracks",
+      "added_at": "2026-05-30T08:51:40.302Z",
+      "added_by": "agent:planner"
+    },
+    {
+      "id": "att-008",
+      "type": "seeds_issue",
+      "ref": "3oWJPt-e7e3",
+      "role": "tracks",
+      "added_at": "2026-05-30T08:51:40.302Z",
+      "added_by": "agent:planner"
+    }
+  ],
   "created_at": "2026-05-30T08:51:37.437Z",
   "id": "plot-kh7dnqx32x5x6h1snxzbfxvhgh87q4ww",
   "intent": {
@@ -28,5 +93,5 @@
   "name": "Ajouter une connexion email + mot de passe et un historique des conversations lié au compte utilisateur, accessible depuis plusieurs appareils, affiché dans une barre latérale, avec ouverture, renommage et suppression des conversations.",
   "schema_version": 1,
   "status": "drafting",
-  "updated_at": "2026-05-30T08:51:37.437Z"
+  "updated_at": "2026-05-30T08:51:40.302Z"
 }
